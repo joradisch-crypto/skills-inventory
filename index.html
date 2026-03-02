@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Skills Inventory — MBA 6265</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1c1c2e;--cream:#f5f1eb;--rust:#bf3b2f;--gold:#c9973a;--sage:#3d7a56;--steel:#4a6fa5;--muted:#888;--border:#e2dbd0;--card:#ffffff;--light:#f0ece5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+.screen{display:none}.screen.active{display:block}
+nav{background:var(--ink);padding:0.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.nav-brand{font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);cursor:pointer}
+.nav-right{display:flex;gap:0.5rem;align-items:center}
+.nav-btn{background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);padding:0.35rem 0.85rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.72rem;cursor:pointer;transition:all 0.2s}
+.nav-btn:hover{border-color:var(--gold);color:var(--gold)}
+.nav-tag{font-size:0.7rem;color:rgba(255,255,255,0.4);padding:0.3rem 0.7rem;border-radius:20px;background:rgba(255,255,255,0.07)}
+.container{max-width:640px;margin:0 auto;padding:2rem 1.25rem 5rem}
+.eyebrow{font-size:0.68rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.5rem}
+h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.5rem);line-height:1.1;color:var(--ink)}
+h2{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--ink)}
+h3{font-size:0.95rem;font-weight:600;color:var(--ink)}
+.lead{color:#666;font-size:0.88rem;line-height:1.7;margin-top:0.5rem}
+.card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.04)}
+.card-dark{background:var(--ink);color:white;border:none}
+.card-dark .lead{color:rgba(255,255,255,0.55)}
+.card-gold{background:#fef8ee;border-color:#f0d9a0}
+input[type=text]{width:100%;padding:0.65rem 0.9rem;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);transition:border-color 0.2s;color:var(--ink)}
+input[type=text]:focus{outline:none;border-color:var(--rust);background:white}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:0.4rem;padding:0.75rem 1.5rem;border-radius:9px;border:none;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.18s}
+.btn-primary{background:var(--rust);color:white}
+.btn-primary:hover{background:#a8342a;transform:translateY(-1px)}
+.btn-secondary{background:var(--light);color:var(--ink)}
+.btn-secondary:hover{background:#ddd8d0}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
+.btn-sm{padding:0.45rem 0.9rem;font-size:0.8rem}
+.btn-block{width:100%}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important}
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1.5rem 0}
+.feature-item{background:white;border:1px solid var(--border);border-radius:10px;padding:1rem}
+.feature-item .icon{font-size:1.4rem;margin-bottom:0.4rem}
+.feature-item h4{font-size:0.85rem;font-weight:600;margin-bottom:0.2rem}
+.feature-item p{font-size:0.75rem;color:var(--muted);line-height:1.5}
+.member-row{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem}
+.member-num{width:28px;height:28px;border-radius:50%;background:var(--ink);color:white;font-size:0.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.url-box{background:var(--ink);border-radius:12px;padding:1.25rem;display:flex;align-items:center;gap:0.75rem;margin:1rem 0}
+.url-text{flex:1;font-family:monospace;font-size:0.82rem;color:var(--gold);word-break:break-all}
+.url-copy{background:rgba(255,255,255,0.1);border:none;color:white;padding:0.4rem 0.75rem;border-radius:6px;font-size:0.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:background 0.2s}
+.url-copy:hover{background:rgba(255,255,255,0.2)}
+.name-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.1rem;border-radius:10px;border:1.5px solid var(--border);background:white;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:all 0.15s;margin-bottom:0.5rem;color:var(--ink);text-align:left}
+.name-btn:hover:not(.done){border-color:var(--rust);color:var(--rust)}
+.name-btn.done{border-color:#b7e4c7;background:#f0faf4;color:var(--sage);cursor:default}
+.badge{font-size:0.68rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:20px;white-space:nowrap}
+.badge-done{background:#c8f0d8;color:var(--sage)}
+.badge-pending{background:#f0f0f0;color:#aaa}
+.progress-wrap{background:var(--border);border-radius:99px;height:5px;overflow:hidden;margin-bottom:0.4rem}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--rust),var(--gold));border-radius:99px;transition:width 0.3s}
+.rating-legend{display:flex;gap:0.8rem;flex-wrap:wrap;font-size:0.7rem;color:var(--muted);margin-bottom:1.2rem}
+.cat-block{background:white;border:1px solid var(--border);border-radius:14px;padding:1.25rem;margin-bottom:1rem}
+.cat-header{display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem}
+.skill-row{display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid #f5f1eb;gap:0.75rem;flex-wrap:wrap}
+.skill-row:last-child{border-bottom:none}
+.skill-label{flex:1;min-width:140px}
+.skill-label span{display:block;font-size:0.85rem;font-weight:500}
+.skill-label small{font-size:0.72rem;color:var(--muted)}
+.rating-group{display:flex;gap:0.3rem;flex-shrink:0}
+.r-btn{width:34px;height:34px;border-radius:7px;border:1.5px solid var(--border);background:white;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.13s;color:#aaa}
+.r-btn:hover{border-color:var(--gold);color:var(--gold)}
+.r-btn.s1{background:#fdecea;border-color:var(--rust);color:var(--rust)}
+.r-btn.s2{background:#fff3e0;border-color:#e8a020;color:#c07010}
+.r-btn.s3{background:#fffde7;border-color:#d4b800;color:#9a8800}
+.r-btn.s4{background:#eaf4ee;border-color:var(--sage);color:var(--sage)}
+.r-btn.s5{background:#e8f1fa;border-color:var(--steel);color:var(--steel)}
+.sticky-footer{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);padding:0.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;z-index:100}
+.bar-row{display:flex;align-items:center;gap:0.7rem;margin-bottom:0.5rem;flex-wrap:wrap}
+.bar-label{width:175px;font-size:0.82rem;font-weight:500;color:#444;flex-shrink:0}
+.bar-track{flex:1;min-width:80px;background:var(--border);border-radius:99px;height:9px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;transition:width 0.8s ease}
+.bar-val{width:32px;text-align:right;font-size:0.78rem;font-weight:700;color:#666}
+.niche-card{background:rgba(255,255,255,0.07);border-radius:10px;padding:1rem;margin-bottom:0.75rem}
+.niche-num{width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:0.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.strength-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem}
+.mini-card{background:white;border-radius:10px;border:1px solid var(--border);padding:1rem}
+.mini-card h4{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.6rem}
+.skill-line{display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0;border-bottom:1px solid #f5f1eb;font-size:0.78rem}
+.skill-line:last-child{border-bottom:none}
+.chip{display:inline-block;font-size:0.7rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:20px;margin:0.15rem}
+.chip-done{background:#d4f4e2;color:var(--sage)}
+.chip-wait{background:#f0f0f0;color:#aaa}
+textarea{width:100%;font-family:monospace;font-size:0.75rem;border:1.5px solid var(--border);border-radius:9px;padding:0.8rem;resize:vertical;min-height:110px;background:var(--cream);color:var(--ink)}
+.divider{display:flex;align-items:center;gap:0.75rem;margin:1.25rem 0;color:var(--muted);font-size:0.78rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.loader-overlay{position:fixed;inset:0;background:rgba(245,241,235,0.93);z-index:999;display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.loader-overlay.active{display:flex}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--rust);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:480px){.strength-grid{grid-template-columns:1fr}.bar-label{width:130px;font-size:0.75rem}.feature-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="loader-overlay" id="loader">
+  <div class="spinner"></div>
+  <div style="font-size:0.88rem;color:var(--muted)" id="loader-msg">Loading...</div>
+</div>
+
+<nav>
+  <div class="nav-brand" onclick="goHome()">MBA 6265 · Skills Inventory</div>
+  <div class="nav-right">
+    <span class="nav-tag" id="nav-team-name" style="display:none"></span>
+    <button class="nav-btn" id="nav-results-btn" onclick="goResults()" style="display:none">View Results</button>
+  </div>
+</nav>
+
+<!-- LANDING -->
+<div class="screen active" id="screen-landing">
+  <div class="container">
+    <div style="padding:3rem 0 1.5rem">
+      <div class="eyebrow">MBA 6265 — Telfer School of Management</div>
+      <h1>Team Skills<br>Inventory</h1>
+      <p class="lead">Find out what your team is actually good at — then design a consulting firm built around your real strengths.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-item"><div class="icon">⚡</div><h4>5 minutes each</h4><p>24 skills across 6 categories. Quick self-ratings, no prep needed.</p></div>
+      <div class="feature-item"><div class="icon">🔗</div><h4>Works remotely</h4><p>Each teammate fills it out on their own device, whenever works for them.</p></div>
+      <div class="feature-item"><div class="icon">📊</div><h4>Live results</h4><p>See your team's collective profile as responses come in.</p></div>
+      <div class="feature-item"><div class="icon">💡</div><h4>Niche suggestions</h4><p>Get consulting firm ideas matched to your team's strengths.</p></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="showScreen('screen-create')" style="margin-bottom:0.75rem">Create a New Team Session →</button>
+    <div class="divider">or rejoin an existing session</div>
+    <div class="card" style="margin-bottom:0">
+      <h3 style="margin-bottom:0.5rem">I have a team link</h3>
+      <p class="lead" style="margin-top:0;margin-bottom:1rem">Paste your team's URL to jump back in.</p>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+        <input type="text" id="rejoin-input" placeholder="Paste URL here..." style="flex:1;min-width:200px">
+        <button class="btn btn-secondary" onclick="rejoinTeam()">Join →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE -->
+<div class="screen" id="screen-create">
+  <div class="container" style="padding-top:1.5rem">
+    <button class="btn btn-ghost btn-sm" onclick="showScreen('screen-landing')" style="margin-bottom:1.25rem">← Back</button>
+    <div class="eyebrow">New Team Session</div>
+    <h1 style="margin-bottom:0.3rem">Set up your team</h1>
+    <p class="lead" style="margin-bottom:1.5rem">Enter your team name and members. You'll get a unique link to share.</p>
+    <div class="card">
+      <div style="margin-bottom:1rem">
+        <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:0.4rem">Team Name</label>
+        <input type="text" id="team-name-input" placeholder="e.g. Team Alpha, Group 3...">
+      </div>
+      <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:0.6rem">Team Members</label>
+      <div id="member-inputs">
+        <div class="member-row"><div class="member-num">1</div><input type="text" class="mname" placeholder="Name"></div>
+        <div class="member-row"><div class="member-num">2</div><input type="text" class="mname" placeholder="Name"></div>
+        <div class="member-row"><div class="member-num">3</div><input type="text" class="mname" placeholder="Name"></div>
+        <div class="member-row"><div class="member-num">4</div><input type="text" class="mname" placeholder="Name"></div>
+      </div>
+      <div style="display:flex;gap:0.5rem;margin-top:0.75rem">
+        <button class="btn btn-secondary btn-sm" onclick="addMember()">+ Add</button>
+        <button class="btn btn-secondary btn-sm" onclick="removeMember()">− Remove</button>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="createTeam()">Create Team & Get Link →</button>
+  </div>
+</div>
+
+<!-- SHARE -->
+<div class="screen" id="screen-share">
+  <div class="container" style="padding-top:1.5rem">
+    <div class="eyebrow">Session Created!</div>
+    <h1 style="margin-bottom:0.3rem">Share this link</h1>
+    <p class="lead" style="margin-bottom:1.5rem">Send this to your team. Anyone who opens it can pick their name and fill out their survey — no signup, no codes.</p>
+    <div class="url-box">
+      <div class="url-text" id="share-url-text"></div>
+      <button class="url-copy" id="copy-btn" onclick="copyTeamUrl()">Copy</button>
+    </div>
+    <div class="card card-gold" style="margin-bottom:1.25rem">
+      <div style="font-size:0.82rem;line-height:1.7;color:#7a5000"><strong>Tip:</strong> Paste this in your group chat. Teammates just open it and tap their name — that's it. Check results any time from the same link.</div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="goToPick()">Take Me to the Survey →</button>
+  </div>
+</div>
+
+<!-- PICK -->
+<div class="screen" id="screen-pick">
+  <div class="container" style="padding-top:1.5rem">
+    <div class="eyebrow" id="pick-eyebrow">Your Team</div>
+    <h1 style="margin-bottom:0.3rem">Who are you?</h1>
+    <p class="lead" style="margin-bottom:1.5rem">Select your name to start your self-assessment.</p>
+    <div id="name-list"></div>
+    <div style="margin-top:1.5rem;text-align:center">
+      <button class="btn btn-secondary" onclick="goResults()">📊 View Team Results</button>
+    </div>
+  </div>
+</div>
+
+<!-- SURVEY -->
+<div class="screen" id="screen-survey">
+  <div class="container" style="padding-top:1.5rem">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
+      <div><div class="eyebrow">Self-Assessment</div><h2 id="survey-heading"></h2></div>
+      <button class="btn btn-ghost btn-sm" onclick="goToPick()">← Back</button>
+    </div>
+    <div class="progress-wrap"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    <div style="font-size:0.72rem;color:var(--muted);margin-bottom:1rem" id="prog-label">0 of 24 rated</div>
+    <div class="rating-legend"><span>1 = No experience</span><span>2 = Basic</span><span>3 = Competent</span><span>4 = Proficient</span><span>5 = Expert</span></div>
+    <div id="survey-body"></div>
+  </div>
+  <div class="sticky-footer">
+    <span style="font-size:0.8rem;color:var(--muted)" id="footer-count">0 / 24</span>
+    <button class="btn btn-primary" id="submit-btn" onclick="submitSurvey()">Submit My Responses →</button>
+  </div>
+</div>
+
+<!-- DONE -->
+<div class="screen" id="screen-done">
+  <div class="container" style="padding-top:3rem;text-align:center">
+    <div style="font-size:3.5rem;margin-bottom:1rem">✅</div>
+    <h2 id="done-name" style="margin-bottom:0.5rem"></h2>
+    <p class="lead" style="margin-bottom:2rem;text-align:center" id="done-msg"></p>
+    <button class="btn btn-secondary btn-block" style="max-width:300px;margin:0 auto 0.75rem" onclick="goToPick()">← Back to team list</button><br>
+    <button class="btn btn-primary btn-block" style="max-width:300px;margin:0 auto" onclick="goResults()">View Team Results →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="screen-results">
+  <div class="container" style="padding-top:1.5rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem;flex-wrap:wrap;gap:0.5rem">
+      <div class="eyebrow">Team Results</div>
+      <button class="btn btn-ghost btn-sm" onclick="goToPick()">← Back</button>
+    </div>
+    <h1 id="results-title" style="margin-bottom:0.3rem">Skills Profile</h1>
+    <div id="results-meta" style="font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem"></div>
+    <div id="results-chips" style="margin-bottom:1.5rem;display:flex;flex-wrap:wrap;gap:0.3rem"></div>
+    <div id="results-body"></div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────
+const ADMIN_KEY = "$2a$10$MxL6gs/.eW3yTTRA2EHqQuo70fm4onIyJiJYKTwjXpSc50b3vwYRG";
+const BASE_URL = window.location.origin + window.location.pathname;
+
+// ── SKILL DATA ──────────────────────────────────────────
+const CATS = [
+  {name:"Industry Knowledge",icon:"🏛️",skills:[{l:"Public Sector / Government",h:"Federal, provincial, or municipal"},{l:"Financial Services",h:"Banking, insurance, capital markets"},{l:"Healthcare / Life Sciences",h:"Hospitals, pharma, public health"},{l:"Technology / Digital",h:"Software, IT, AI, cyber"}]},
+  {name:"Strategy & Analysis",icon:"🎯",skills:[{l:"Strategic Planning",h:"Vision, mission, competitive positioning"},{l:"Business Case Development",h:"ROI analysis, cost-benefit"},{l:"Market Research & Analysis",h:"Sizing, trends, competitive intel"},{l:"Data Analysis / Quantitative",h:"Excel, stats, modelling"}]},
+  {name:"Operations & Implementation",icon:"⚙️",skills:[{l:"Process Improvement / Lean",h:"Workflow redesign, efficiency"},{l:"Project Management",h:"Planning, scheduling, PMO"},{l:"Change Management",h:"People-side of change"},{l:"Program Evaluation",h:"Results-based management, KPIs"}]},
+  {name:"People & HR",icon:"👥",skills:[{l:"Human Resources Management",h:"Talent, compensation, labour"},{l:"Organizational Design",h:"Structure, spans, governance"},{l:"Learning & Development",h:"Training, capability building"},{l:"Leadership Coaching",h:"Executive coaching, assessments"}]},
+  {name:"Technology & Digital",icon:"💻",skills:[{l:"Digital Transformation",h:"Tech-enabled business change"},{l:"IT Strategy & Architecture",h:"Enterprise systems, roadmaps"},{l:"Cybersecurity / Risk",h:"Security frameworks, GRC"},{l:"Data / Analytics / AI",h:"BI, ML, data governance"}]},
+  {name:"Consulting Craft",icon:"🧩",skills:[{l:"Client Relationship Management",h:"Trust-building, account growth"},{l:"Proposal & Report Writing",h:"Structured writing, storytelling"},{l:"Presentation / Facilitation",h:"Workshops, stakeholder sessions"},{l:"French / Bilingual",h:"Ability to serve bilingual clients"}]},
+];
+const TOTAL = CATS.reduce((s,c)=>s+c.skills.length,0);
+
+const NICHES = [
+  {title:"Government Strategy & Performance Management",n1:"Public Sector Digital Transformation",n2:"Program Evaluation & Results-Based Management",why:"Ottawa firms with gov't knowledge + strategy skills are highly competitive for federal contracts.",cats:["Industry Knowledge","Strategy & Analysis"]},
+  {title:"Workforce & Organizational Effectiveness",n1:"Organizational Design & HR Transformation",n2:"Change Management & Culture Building",why:"Major demand as organizations restructure. Pairs well with strong people + operations skills.",cats:["People & HR","Operations & Implementation"]},
+  {title:"Digital Operations & Technology Advisory",n1:"Digital Transformation Strategy",n2:"IT Process Improvement & Automation",why:"Technology-enabled operations is the fastest-growing consulting segment.",cats:["Technology & Digital","Operations & Implementation"]},
+  {title:"Healthcare & Public Sector Strategy",n1:"Health System Planning & Performance",n2:"Public Policy Analysis & Stakeholder Engagement",why:"Niche with few large incumbents outside Big 4 — strong differentiation opportunity.",cats:["Industry Knowledge","Strategy & Analysis"]},
+  {title:"People Analytics & HR Tech",n1:"Workforce Planning & Analytics",n2:"Learning Organization & Talent Strategy",why:"Emerging niche combining data skills with HR expertise — few firms do this well in Canada.",cats:["People & HR","Technology & Digital"]},
+  {title:"Operational Excellence & Process Innovation",n1:"Lean Management & Process Redesign",n2:"Project Portfolio & PMO Advisory",why:"Strong implementation niche — complements strategy boutiques as execution partners.",cats:["Operations & Implementation","Strategy & Analysis"]},
+  {title:"Financial Services Advisory",n1:"Risk & Compliance Consulting",n2:"FinTech Strategy & Digital Banking",why:"High-margin niche with strong demand in Toronto and growing demand in Ottawa.",cats:["Industry Knowledge","Technology & Digital"]},
+];
+
+// ── STATE ───────────────────────────────────────────────
+let CURRENT_BIN=null, SESSION=null, CURRENT_NAME=null, LOCAL_RATINGS={};
+
+// ── JSONBIN API ─────────────────────────────────────────
+async function createBin(data) {
+  const r = await fetch('https://api.jsonbin.io/v3/b',{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':ADMIN_KEY,'X-Bin-Name':data.teamName||'team','X-Private':'true'},body:JSON.stringify(data)});
+  if(!r.ok){const t=await r.text();throw new Error(`Create failed (${r.status}): ${t}`);}
+  const j=await r.json();return j.metadata.id;
+}
+async function readBin(id) {
+  const r=await fetch(`https://api.jsonbin.io/v3/b/${id}/latest`,{headers:{'X-Master-Key':ADMIN_KEY,'X-Bin-Meta':'false'}});
+  if(!r.ok)throw new Error(`Read failed (${r.status})`);
+  const d=await r.json();
+  if(!d||typeof d!=='object')return{teamName:'',members:[],responses:{}};
+  if(!d.members)d.members=[];if(!d.responses)d.responses={};return d;
+}
+async function writeBin(id,data) {
+  const r=await fetch(`https://api.jsonbin.io/v3/b/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':ADMIN_KEY},body:JSON.stringify(data)});
+  if(!r.ok)throw new Error(`Write failed (${r.status})`);
+}
+
+// ── ROUTING ─────────────────────────────────────────────
+function getTeamId(){return new URLSearchParams(window.location.search).get('team');}
+function buildUrl(id){return BASE_URL+'?team='+id;}
+function setUrl(id){window.history.replaceState({},'',id?buildUrl(id):BASE_URL);}
+
+// ── NAV ─────────────────────────────────────────────────
+function updateNav(){
+  if(SESSION&&SESSION.teamName){const t=document.getElementById('nav-team-name');t.textContent=SESSION.teamName;t.style.display='inline-block';}
+  document.getElementById('nav-results-btn').style.display='inline-flex';
+}
+function goHome(){setUrl(null);CURRENT_BIN=null;SESSION=null;document.getElementById('nav-team-name').style.display='none';document.getElementById('nav-results-btn').style.display='none';showScreen('screen-landing');}
+
+// ── LANDING ─────────────────────────────────────────────
+function rejoinTeam(){
+  let v=document.getElementById('rejoin-input').value.trim();
+  if(v.includes('?team='))v=v.split('?team=')[1].split('&')[0];
+  if(!v){alert('Please paste a team URL.');return;}
+  loadTeam(v);
+}
+
+// ── CREATE ──────────────────────────────────────────────
+function addMember(){const w=document.getElementById('member-inputs');if(w.children.length>=8)return;const i=w.children.length+1;const r=document.createElement('div');r.className='member-row';r.innerHTML=`<div class="member-num">${i}</div><input type="text" class="mname" placeholder="Name">`;w.appendChild(r);}
+function removeMember(){const w=document.getElementById('member-inputs');if(w.children.length>2)w.removeChild(w.lastChild);}
+
+async function createTeam(){
+  const teamName=document.getElementById('team-name-input').value.trim();
+  const members=[...document.querySelectorAll('.mname')].map(i=>i.value.trim()).filter(Boolean);
+  if(!teamName){alert('Please enter a team name.');return;}
+  if(members.length<2){alert('Please enter at least 2 names.');return;}
+  showLoader('Creating your team session...');
+  try{
+    const data={teamName,members,responses:{},createdAt:Date.now()};
+    const id=await createBin(data);
+    CURRENT_BIN=id;SESSION=data;setUrl(id);updateNav();hideLoader();
+    document.getElementById('share-url-text').textContent=buildUrl(id);
+    showScreen('screen-share');
+  }catch(e){hideLoader();alert('Could not create session.\n\n'+e.message);}
+}
+
+function copyTeamUrl(){
+  const url=document.getElementById('share-url-text').textContent;
+  const btn=document.getElementById('copy-btn');
+  navigator.clipboard.writeText(url).catch(()=>{const t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);});
+  btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);
+}
+
+// ── LOAD TEAM ────────────────────────────────────────────
+async function loadTeam(id){
+  showLoader('Loading team...');
+  try{const d=await readBin(id);CURRENT_BIN=id;SESSION=d;setUrl(id);updateNav();hideLoader();goToPick();}
+  catch(e){hideLoader();alert('Could not find that team. Check the link.\n\n'+e.message);}
+}
+
+// ── PICK ─────────────────────────────────────────────────
+async function goToPick(){
+  if(!CURRENT_BIN){showScreen('screen-landing');return;}
+  showLoader('Refreshing...');
+  try{SESSION=await readBin(CURRENT_BIN);hideLoader();}catch(e){hideLoader();}
+  document.getElementById('pick-eyebrow').textContent=SESSION.teamName||'Your Team';
+  const responded=Object.keys(SESSION.responses||{});
+  const list=document.getElementById('name-list');list.innerHTML='';
+  (SESSION.members||[]).forEach(name=>{
+    const done=responded.includes(name);
+    const btn=document.createElement('button');
+    btn.className='name-btn'+(done?' done':'');
+    btn.innerHTML=`<span>${name}</span><span class="badge ${done?'badge-done':'badge-pending'}">${done?'✓ Done':'Tap to start →'}</span>`;
+    if(!done)btn.onclick=()=>startSurvey(name);
+    list.appendChild(btn);
+  });
+  showScreen('screen-pick');window.scrollTo(0,0);
+}
+
+// ── SURVEY ───────────────────────────────────────────────
+function startSurvey(name){
+  CURRENT_NAME=name;LOCAL_RATINGS={};
+  document.getElementById('survey-heading').textContent=name;
+  const body=document.getElementById('survey-body');body.innerHTML='';
+  CATS.forEach((cat,ci)=>{
+    const block=document.createElement('div');block.className='cat-block';
+    block.innerHTML=`<div class="cat-header"><span style="font-size:1.2rem">${cat.icon}</span><strong>${cat.name}</strong></div>`;
+    cat.skills.forEach((sk,si)=>{
+      const row=document.createElement('div');row.className='skill-row';
+      row.innerHTML=`<div class="skill-label"><span>${sk.l}</span><small>${sk.h}</small></div><div class="rating-group" id="rg-${ci}-${si}">${[1,2,3,4,5].map(v=>`<button class="r-btn" onclick="rate(${ci},${si},${v})" id="rb-${ci}-${si}-${v}">${v}</button>`).join('')}</div>`;
+      block.appendChild(row);
+    });
+    body.appendChild(block);
+  });
+  updateProg();showScreen('screen-survey');window.scrollTo(0,0);
+}
+
+function rate(ci,si,val){
+  LOCAL_RATINGS[`${ci}_${si}`]=val;
+  for(let v=1;v<=5;v++)document.getElementById(`rb-${ci}-${si}-${v}`).className='r-btn'+(v===val?` s${v}`:'');
+  updateProg();
+}
+function updateProg(){
+  const d=Object.keys(LOCAL_RATINGS).length,pct=Math.round(d/TOTAL*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-label').textContent=`${d} of ${TOTAL} rated`;
+  document.getElementById('footer-count').textContent=`${d} / ${TOTAL}`;
+}
+
+async function submitSurvey(){
+  const d=Object.keys(LOCAL_RATINGS).length;
+  if(d<TOTAL&&!confirm(`${d} of ${TOTAL} rated. Unrated skills count as 0. Submit anyway?`))return;
+  const btn=document.getElementById('submit-btn');btn.disabled=true;btn.textContent='Saving...';
+  try{
+    SESSION=await readBin(CURRENT_BIN);
+    if(!SESSION.responses)SESSION.responses={};
+    SESSION.responses[CURRENT_NAME]=LOCAL_RATINGS;
+    await writeBin(CURRENT_BIN,SESSION);
+    const total=(SESSION.members||[]).length,responded=Object.keys(SESSION.responses).length;
+    document.getElementById('done-name').textContent=`Thanks, ${CURRENT_NAME}!`;
+    document.getElementById('done-msg').textContent=`Your responses are saved. ${responded} of ${total} team members have responded so far.`;
+    showScreen('screen-done');window.scrollTo(0,0);
+  }catch(e){alert('Could not save: '+e.message);btn.disabled=false;btn.textContent='Submit My Responses →';}
+}
+
+// ── RESULTS ──────────────────────────────────────────────
+async function goResults(){
+  if(!CURRENT_BIN){showScreen('screen-landing');return;}
+  showLoader('Loading results...');
+  try{SESSION=await readBin(CURRENT_BIN);hideLoader();}
+  catch(e){hideLoader();alert('Could not load results: '+e.message);return;}
+  const members=SESSION.members||[],responses=SESSION.responses||{},responded=Object.keys(responses),n=responded.length;
+  document.getElementById('results-title').textContent=(SESSION.teamName||'Team')+' — Skills Profile';
+  document.getElementById('results-meta').textContent=`${n} of ${members.length} responded`;
+  document.getElementById('results-chips').innerHTML=members.map(m=>`<span class="chip ${responded.includes(m)?'chip-done':'chip-wait'}">${responded.includes(m)?'✓ ':'⏳ '}${m}</span>`).join('');
+  const body=document.getElementById('results-body');body.innerHTML='';
+  if(n===0){body.innerHTML='<div style="text-align:center;padding:3rem;color:var(--muted)">No responses yet. Share the link with your team!</div>';showScreen('screen-results');return;}
+  const avgs={};
+  CATS.forEach((cat,ci)=>cat.skills.forEach((_,si)=>{const key=`${ci}_${si}`,vals=responded.map(name=>(responses[name]||{})[key]||0);avgs[key]=vals.reduce((a,b)=>a+b,0)/n;}));
+  const catAvgs=CATS.map((cat,ci)=>({name:cat.name,icon:cat.icon,avg:cat.skills.map((_,si)=>avgs[`${ci}_${si}`]).reduce((a,b)=>a+b,0)/cat.skills.length}));
+  const catRanked=[...catAvgs].sort((a,b)=>b.avg-a.avg);
+  const allFlat=[];CATS.forEach((cat,ci)=>cat.skills.forEach((sk,si)=>allFlat.push({label:sk.l,avg:avgs[`${ci}_${si}`]})));
+  allFlat.sort((a,b)=>b.avg-a.avg);
+  const top5=allFlat.slice(0,5),bot5=allFlat.slice(-5).reverse();
+  const scored=NICHES.map(s=>({...s,score:s.cats.reduce((sum,rc)=>{const c=catRanked.find(x=>x.name===rc);return sum+(c?c.avg:0);},0)})).sort((a,b)=>b.score-a.score).slice(0,3);
+  const col=avg=>avg>=4?'#3d7a56':avg>=3?'#4a6fa5':avg>=2?'#c9973a':'#bf3b2f';
+
+  // Cat bars
+  const cs=document.createElement('div');cs.className='card';
+  cs.innerHTML='<h3 style="margin-bottom:1rem">Category Averages</h3>'+catRanked.map(c=>`<div class="bar-row"><div class="bar-label">${c.icon} ${c.name}</div><div class="bar-track"><div class="bar-fill" style="width:${(c.avg/5)*100}%;background:${col(c.avg)}"></div></div><div class="bar-val">${c.avg.toFixed(1)}</div></div>`).join('');
+  body.appendChild(cs);
+
+  // All skills
+  const ss=document.createElement('div');ss.className='card';ss.innerHTML='<h3 style="margin-bottom:1rem">All Skills</h3>';
+  CATS.forEach((cat,ci)=>{
+    ss.innerHTML+=`<div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:1rem 0 0.5rem">${cat.icon} ${cat.name}</div>`;
+    cat.skills.forEach((sk,si)=>{const avg=avgs[`${ci}_${si}`];ss.innerHTML+=`<div class="bar-row"><div class="bar-label" style="font-size:0.78rem">${sk.l}</div><div class="bar-track"><div class="bar-fill" style="width:${(avg/5)*100}%;background:${col(avg)}"></div></div><div class="bar-val">${avg.toFixed(1)}</div></div>`;});
+  });
+  body.appendChild(ss);
+
+  // Strengths/gaps
+  const sg=document.createElement('div');sg.className='strength-grid';
+  sg.innerHTML=`<div class="mini-card"><h4 style="color:var(--sage)">🏆 Top Strengths</h4>${top5.map(s=>`<div class="skill-line"><span>${s.label}</span><strong style="color:var(--sage)">${s.avg.toFixed(1)}</strong></div>`).join('')}</div><div class="mini-card"><h4 style="color:var(--rust)">🔍 Skill Gaps</h4>${bot5.map(s=>`<div class="skill-line"><span>${s.label}</span><strong style="color:var(--rust)">${s.avg.toFixed(1)}</strong></div>`).join('')}</div>`;
+  body.appendChild(sg);
+
+  // Niches
+  const ne=document.createElement('div');ne.className='card card-dark';
+  ne.innerHTML=`<div style="color:var(--gold);font-weight:700;margin-bottom:0.3rem">💡 Suggested Consulting Niches</div><p class="lead" style="font-size:0.8rem;margin-bottom:1rem">Based on your collective strengths — use as brainstorm starting points.</p>${scored.map((s,i)=>`<div class="niche-card"><div style="display:flex;gap:0.6rem;align-items:flex-start"><div class="niche-num">${i+1}</div><div><div style="color:white;font-weight:600;font-size:0.9rem;margin-bottom:0.35rem">${s.title}</div><div style="font-size:0.8rem;color:rgba(255,255,255,0.7);margin-bottom:0.2rem"><strong style="color:rgba(255,255,255,0.9)">Niche A:</strong> ${s.n1}</div><div style="font-size:0.8rem;color:rgba(255,255,255,0.7);margin-bottom:0.4rem"><strong style="color:rgba(255,255,255,0.9)">Niche B:</strong> ${s.n2}</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.45);font-style:italic">${s.why}</div></div></div></div>`).join('')}`;
+  body.appendChild(ne);
+
+  // Export
+  const ex=document.createElement('div');ex.className='card';
+  ex.innerHTML=`<h3 style="margin-bottom:0.5rem">📋 Export for brainstorm notes</h3><textarea id="export-ta" readonly></textarea><button class="btn btn-secondary btn-sm" style="margin-top:0.5rem" onclick="copyExport()">Copy to clipboard</button>`;
+  body.appendChild(ex);
+  document.getElementById('export-ta').value=[`MBA 6265 – ${SESSION.teamName||'Team'} Skills Inventory`,`Responses: ${responded.join(', ')} (${n}/${members.length})`,``,`CATEGORY AVERAGES:`,...catRanked.map(c=>`  ${c.icon} ${c.name}: ${c.avg.toFixed(2)}/5`),``,`TOP STRENGTHS: ${top5.map(s=>s.label).join(', ')}`,``,`SKILL GAPS: ${bot5.map(s=>s.label).join(', ')}`,``,`SUGGESTED NICHES:`,...scored.map((s,i)=>`  ${i+1}. ${s.title}\n     → ${s.n1} + ${s.n2}`)].join('\n');
+
+  showScreen('screen-results');window.scrollTo(0,0);
+}
+
+function copyExport(){const t=document.getElementById('export-ta');t.select();document.execCommand('copy');alert('Copied!');}
+
+// ── HELPERS ──────────────────────────────────────────────
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showLoader(msg){document.getElementById('loader-msg').textContent=msg||'Loading...';document.getElementById('loader').classList.add('active');}
+function hideLoader(){document.getElementById('loader').classList.remove('active');}
+
+// ── INIT ─────────────────────────────────────────────────
+(function(){const id=getTeamId();if(id)loadTeam(id);else showScreen('screen-landing');})();
+</script>
+</body>
+</html>
