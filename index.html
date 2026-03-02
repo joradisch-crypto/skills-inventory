@@ -286,7 +286,11 @@ async function readBin(id) {
 }
 async function writeBin(id,data) {
   const r=await fetch(`https://api.jsonbin.io/v3/b/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':ADMIN_KEY},body:JSON.stringify(data)});
-  if(!r.ok)throw new Error(`Write failed (${r.status})`);
+  if(!r.ok){
+    let msg='';
+    try{const j=await r.json();msg=JSON.stringify(j);}catch{try{msg=await r.text();}catch{}}
+    throw new Error(`Write failed (${r.status}): ${msg}`);
+  }
 }
 
 // ── ROUTING ─────────────────────────────────────────────
@@ -395,13 +399,18 @@ async function submitSurvey(){
   const d=Object.keys(LOCAL_RATINGS).length;
   if(d<TOTAL&&!confirm(`${d} of ${TOTAL} rated. Unrated skills count as 0. Submit anyway?`))return;
   const btn=document.getElementById('submit-btn');btn.disabled=true;btn.textContent='Saving...';
-  // Retry loop — re-reads fresh data before every write to prevent overwriting teammates
-  const MAX_RETRIES=4;
+  const MAX_RETRIES=5;
+  let lastErr='';
   for(let attempt=0;attempt<MAX_RETRIES;attempt++){
     try{
+      btn.textContent=attempt===0?'Saving...':`Retrying (${attempt})...`;
+      // Always wait a moment before writing to avoid rate limits
+      if(attempt>0) await new Promise(r=>setTimeout(r,1000*attempt));
       const fresh=await readBin(CURRENT_BIN);
       if(!fresh.responses)fresh.responses={};
       fresh.responses[CURRENT_NAME]=LOCAL_RATINGS;
+      // Small pause between read and write
+      await new Promise(r=>setTimeout(r,300));
       await writeBin(CURRENT_BIN,fresh);
       SESSION=fresh;
       const total=(SESSION.members||[]).length,responded=Object.keys(SESSION.responses).length;
@@ -410,11 +419,15 @@ async function submitSurvey(){
       showScreen('screen-done');window.scrollTo(0,0);
       return;
     }catch(e){
-      if(attempt<MAX_RETRIES-1){await new Promise(r=>setTimeout(r,500+attempt*300));continue;}
-      alert('Could not save after several attempts. Please try again.\n\n'+e.message);
-      btn.disabled=false;btn.textContent='Submit My Responses →';
+      lastErr=e.message;
+      console.error(`Submit attempt ${attempt+1} failed:`,e);
+      continue;
     }
   }
+  // All retries exhausted — show the actual error
+  alert('Could not save. Please try again in a moment.\n\nError: '+lastErr);
+  btn.disabled=false;
+  btn.textContent='Submit My Responses →';
 }
 
 // ── RESULTS ──────────────────────────────────────────────
