@@ -245,7 +245,7 @@ textarea{width:100%;font-family:monospace;font-size:0.75rem;border:1.5px solid v
 <script>
 // ── CONFIG ──────────────────────────────────────────────
 const ADMIN_KEY = "$2a$10$MxL6gs/.eW3yTTRA2EHqQuo70fm4onIyJiJYKTwjXpSc50b3vwYRG";
-const BASE_URL = window.location.origin + window.location.pathname;
+const BASE_URL = 'https://joradisch-crypto.github.io/skills-inventory/';
 
 // ── SKILL DATA ──────────────────────────────────────────
 const CATS = [
@@ -395,16 +395,26 @@ async function submitSurvey(){
   const d=Object.keys(LOCAL_RATINGS).length;
   if(d<TOTAL&&!confirm(`${d} of ${TOTAL} rated. Unrated skills count as 0. Submit anyway?`))return;
   const btn=document.getElementById('submit-btn');btn.disabled=true;btn.textContent='Saving...';
-  try{
-    SESSION=await readBin(CURRENT_BIN);
-    if(!SESSION.responses)SESSION.responses={};
-    SESSION.responses[CURRENT_NAME]=LOCAL_RATINGS;
-    await writeBin(CURRENT_BIN,SESSION);
-    const total=(SESSION.members||[]).length,responded=Object.keys(SESSION.responses).length;
-    document.getElementById('done-name').textContent=`Thanks, ${CURRENT_NAME}!`;
-    document.getElementById('done-msg').textContent=`Your responses are saved. ${responded} of ${total} team members have responded so far.`;
-    showScreen('screen-done');window.scrollTo(0,0);
-  }catch(e){alert('Could not save: '+e.message);btn.disabled=false;btn.textContent='Submit My Responses →';}
+  // Retry loop — re-reads fresh data before every write to prevent overwriting teammates
+  const MAX_RETRIES=4;
+  for(let attempt=0;attempt<MAX_RETRIES;attempt++){
+    try{
+      const fresh=await readBin(CURRENT_BIN);
+      if(!fresh.responses)fresh.responses={};
+      fresh.responses[CURRENT_NAME]=LOCAL_RATINGS;
+      await writeBin(CURRENT_BIN,fresh);
+      SESSION=fresh;
+      const total=(SESSION.members||[]).length,responded=Object.keys(SESSION.responses).length;
+      document.getElementById('done-name').textContent=`Thanks, ${CURRENT_NAME}!`;
+      document.getElementById('done-msg').textContent=`Your responses are saved. ${responded} of ${total} team members have responded so far.`;
+      showScreen('screen-done');window.scrollTo(0,0);
+      return;
+    }catch(e){
+      if(attempt<MAX_RETRIES-1){await new Promise(r=>setTimeout(r,500+attempt*300));continue;}
+      alert('Could not save after several attempts. Please try again.\n\n'+e.message);
+      btn.disabled=false;btn.textContent='Submit My Responses →';
+    }
+  }
 }
 
 // ── RESULTS ──────────────────────────────────────────────
